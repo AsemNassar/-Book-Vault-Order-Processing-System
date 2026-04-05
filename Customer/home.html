@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BookCorner - Discover Your Next Great Read</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <!-- Header -->
+    <header>
+        <nav>
+            <a href="#" class="logo">
+                <img src="images/book-icon.png" alt="Book Icon">
+                BookCorner
+            </a>
+
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#browse">Browse Books</a></li>
+            </ul>
+
+            <div class="search-wrapper"
+                style="display: flex; gap: 10px; align-items: center; flex: 1; max-width: 600px; margin: 0 2rem;">
+                <div class="browse-dropdown-container" style="position: relative;">
+                    <button id="browseByBtn" class="browse-btn">Browse By ▼</button>
+                    <!-- Type Selection Menu -->
+                    <div id="browseByTypeMenu" class="dropdown-menu">
+                        <div class="dropdown-item" onclick="showFilterOptions('category')">Category</div>
+                        <div class="dropdown-item" onclick="showFilterOptions('author')">Author</div>
+                        <div class="dropdown-item" onclick="showFilterOptions('publisher')">Publisher</div>
+                        <div class="dropdown-item" onclick="showFilterOptions('isbn')">ISBN</div>
+                    </div>
+                    <!-- Specific Options Menu (Initially Hidden) -->
+                    <div id="browseOptionsMenu" class="dropdown-menu sub-menu">
+                        <div class="menu-header">
+                            <span onclick="backToTypes()" style="cursor: pointer;">← Back</span>
+                            <span id="filterTitle" style="font-weight: bold; margin-left: 10px;">Select...</span>
+                            <span onclick="closeBrowseMenu()" style="cursor: pointer; float: right;">×</span>
+                        </div>
+                        <div id="filterOptionsList" style="max-height: 300px; overflow-y: auto;">
+                            <!-- Options will be loaded here -->
+                            <div style="padding: 10px; text-align: center;">Loading...</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="search-container" style="margin: 0; flex: 1;">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="searchInput" placeholder="Search books by title, author, ISBN...">
+                </div>
+            </div>
+
+            <style>
+                .browse-btn {
+                    padding: 0.5rem 1rem;
+                    background: #f3f4f6;
+                    border: 1px solid #d1d5db;
+                    border-radius: 6px;
+                    cursor: pointer;
+                    font-weight: 500;
+                    white-space: nowrap;
+                    color: #374151;
+                }
+
+                .browse-btn:hover {
+                    background: #e5e7eb;
+                }
+
+                .dropdown-menu {
+                    display: none;
+                    position: absolute;
+                    top: 100%;
+                    left: 0;
+                    background: white;
+                    border: 1px solid #e5e7eb;
+                    border-radius: 8px;
+                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                    min-width: 200px;
+                    z-index: 1000;
+                    margin-top: 5px;
+                    text-align: left;
+                }
+
+                .dropdown-menu.show {
+                    display: block;
+                }
+
+                .dropdown-item {
+                    padding: 10px 15px;
+                    cursor: pointer;
+                    border-bottom: 1px solid #f3f4f6;
+                    color: #374151;
+                }
+
+                .dropdown-item:last-child {
+                    border-bottom: none;
+                }
+
+                .dropdown-item:hover {
+                    background: #f9fafb;
+                    color: #2563eb;
+                }
+
+                .menu-header {
+                    padding: 10px;
+                    background: #f3f4f6;
+                    border-bottom: 1px solid #e5e7eb;
+                    font-size: 0.9rem;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    color: #374151;
+                }
+            </style>
+
+            <script>
+                // Browse By Dropdown Logic
+                const browseByBtn = document.getElementById('browseByBtn');
+                const browseByTypeMenu = document.getElementById('browseByTypeMenu');
+                const browseOptionsMenu = document.getElementById('browseOptionsMenu');
+                const filterOptionsList = document.getElementById('filterOptionsList');
+                const filterTitle = document.getElementById('filterTitle');
+
+                if (browseByBtn) {
+                    browseByBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        // Toggle main menu, hide sub menu
+                        browseByTypeMenu.classList.toggle('show');
+                        browseOptionsMenu.classList.remove('show');
+                    });
+
+                    // Close menus when clicking outside
+                    document.addEventListener('click', () => {
+                        closeBrowseMenu();
+                    });
+
+                    // Prevent closing when clicking inside menus
+                    browseByTypeMenu.addEventListener('click', e => e.stopPropagation());
+                    browseOptionsMenu.addEventListener('click', e => e.stopPropagation());
+                }
+
+                function closeBrowseMenu() {
+                    if (browseByTypeMenu) browseByTypeMenu.classList.remove('show');
+                    if (browseOptionsMenu) browseOptionsMenu.classList.remove('show');
+                }
+
+                function backToTypes() {
+                    browseOptionsMenu.classList.remove('show');
+                    browseByTypeMenu.classList.add('show');
+                }
+
+                async function showFilterOptions(type) {
+                    browseByTypeMenu.classList.remove('show');
+                    browseOptionsMenu.classList.add('show');
+
+                    filterTitle.textContent = type.charAt(0).toUpperCase() + type.slice(1);
+                    filterOptionsList.innerHTML = '<div style="padding: 10px; text-align: center;">Loading...</div>';
+
+                    try {
+                        const response = await fetch(`get_filters.php?type=${type}`);
+                        const result = await response.json();
+
+                        if (result.success && result.data.length > 0) {
+                            filterOptionsList.innerHTML = result.data.map(item => `
+                                <div class="dropdown-item" onclick="selectFilter('${type}', '${item.replace(/'/g, "\\'")}')">
+                                    ${item}
+                                </div>
+                            `).join('');
+                        } else {
+                            filterOptionsList.innerHTML = '<div style="padding: 10px; text-align: center;">No options found</div>';
+                        }
+                    } catch (error) {
+                        console.error('Error fetching filters:', error);
+                        filterOptionsList.innerHTML = '<div style="padding: 10px; text-align: center; color: red;">Error loading options</div>';
+                    }
+                }
+
+                function selectFilter(type, value) {
+                    // Redirect to browse page with search query
+                    if (type === 'category') {
+                        window.location.href = `browse.php?category=${encodeURIComponent(value)}`;
+                    } else {
+                        window.location.href = `browse.php?search=${encodeURIComponent(value)}`;
+                    }
+                }
+            </script>
+
+            <div class="auth-buttons">
+                <a href="login.html" class="btn btn-login">Login</a>
+                <a href="signUp.html" class="btn btn-signup">Sign Up</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="hero-content">
+            <p class="hero-subtitle">Welcome to BookCorner</p>
+            <h1>Discover Your Next<br><span class="highlight">Great Read</span></h1>
+            <p class="hero-description">
+                Explore thousands of books from bestselling authors. From timeless classics to the<br>
+                latest releases, find your perfect book at BookCorner.
+            </p>
+            <div class="hero-buttons">
+                <a href="browse.php" class="btn btn-primary">
+                    Browse Collection →
+                </a>
+                <a href="signUp.html" class="btn btn-secondary">
+                    Create Account
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section class="features">
+        <div class="features-container">
+            <div class="feature">
+                <div class="feature-icon">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" />
+                    </svg>
+                </div>
+                <div>
+                    <h3>Fast Delivery</h3>
+                    <p>Free shipping on orders over $50</p>
+                </div>
+            </div>
+
+            <div class="feature">
+                <div class="feature-icon">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                    </svg>
+                </div>
+                <div>
+                    <h3>Secure Payment</h3>
+                    <p>100% secure payment processing</p>
+                </div>
+            </div>
+
+            <div class="feature">
+                <div class="feature-icon">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                    </svg>
+                </div>
+                <div>
+                    <h3>Quality Selection</h3>
+                    <p>Curated collection of quality books</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Categories -->
+    <section class="categories">
+        <div class="section-header">
+            <h2>Browse by Category</h2>
+        </div>
+        <div class="category-pills">
+            <a href="#" class="category-pill" data-category="all">All Books</a>
+            <a href="#" class="category-pill" data-category="Science">Science</a>
+            <a href="#" class="category-pill" data-category="Art">Art</a>
+            <a href="#" class="category-pill" data-category="Religion">Religion</a>
+            <a href="#" class="category-pill" data-category="History">History</a>
+            <a href="#" class="category-pill" data-category="Geography">Geography</a>
+        </div>
+    </section>
+
+    <!-- Featured Books -->
+    <section class="books-section" id="browse">
+        <div class="section-header">
+            <div>
+                <h2>Featured Books</h2>
+                <p style="color: #666; margin-top: 0.5rem;">Handpicked selections for you</p>
+            </div>
+            <a href="#browse" class="view-all">View All →</a>
+        </div>
+        <div class="books-grid" id="booksGrid">
+            <!-- Loading state -->
+            <div class="loading-message" style="grid-column: 1/-1; text-align: center; padding: 3rem; color: #666;">
+                <p style="font-size: 1.2rem;">📚 Loading books...</p>
+            </div>
+        </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="cta-icon">
+            <img src="./images/book-icon.png" alt="Book Icon" width="60" height="60">
+        </div>
+        <h2>Start Your Reading Journey Today</h2>
+        <p>Join thousands of book lovers who trust BookCorner for their literary adventures.<br>
+            Sign up now and get access to exclusive deals.</p>
+        <a href="signUp.html" class="btn btn-cta">Create Free Account →</a>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-brand">
+                <a href="#" class="logo">
+                    <img src="./images/book-icon.png" alt="Book Icon" width="36" height="36">
+                    BookCorner
+                </a>
+                <p>Your trusted destination for discovering and purchasing quality books from around the world.</p>
+            </div>
+
+            <div class="footer-column">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="#">Browse Books</a></li>
+                    <li><a href="#">Fiction</a></li>
+                    <li><a href="#">Non-Fiction</a></li>
+                    <li><a href="#">Science Fiction</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-column">
+                <h3>Customer Service</h3>
+                <ul>
+                    <li><a href="#">My Account</a></li>
+                    <li><a href="#">Order History</a></li>
+                    <li><a href="#">Shopping Cart</a></li>
+                    <li><a href="#">Returns & Refunds</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-column">
+                <h3>Contact Us</h3>
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <span>📍</span>
+                        <span>123 Book Street, Library City</span>
+                    </div>
+                    <div class="contact-item">
+                        <span>📞</span>
+                        <span>(555) 123-4567</span>
+                    </div>
+                    <div class="contact-item">
+                        <span>✉️</span>
+                        <span>support@bookcorner.com</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>© 2025 BookCorner. All rights reserved.</p>
+        </div>
+    </footer>
+    <script src="user-home-dynamic.js"></script>
+</body>
+
+</html>
