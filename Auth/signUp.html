@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - BookCorner</title>
+    <link rel="stylesheet" href="auth-styles.css">
+    <script src="auth.js" defer></script>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <nav>
+            <a href="home.html" class="logo">
+                <img src="images/book-icon.png" alt="Book Icon">
+                BookCorner
+            </a>
+            
+            <div class="nav-right">
+                <a href="login.html" class="btn btn-login">Login</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Sign Up Form -->
+    <div class="auth-container">
+        <div class="auth-box">
+            <div class="auth-header">
+                <div class="auth-header-title">
+                <img src="images/book-icon.png" alt="BookCorner Logo">
+                <h1>Create Your Account</h1>
+                </div>
+                <p>Join thousands of book lovers at BookCorner</p>
+            </div>
+
+            <form class="auth-form" action="signup_process.php" method="post">
+                <!-- Username -->
+                <div class="form-group">
+                    <label for="username">Username *</label>
+                    <input type="text" id="username" name="username" required placeholder="Choose a username">
+                </div>
+
+                <!-- Password -->
+                <div class="form-group">
+                    <label for="password">Password *</label>
+                    <input type="password" id="password" name="password" required placeholder="Create a strong password">
+                </div>
+
+                <!-- Confirm Password -->
+                <div class="form-group">
+                    <label for="confirm-password">Confirm Password *</label>
+                    <input type="password" id="confirm-password" name="confirm-password" required placeholder="Re-enter your password">
+                </div>
+
+                <!-- First Name & Last Name -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="first-name">First Name *</label>
+                        <input type="text" id="first-name" name="first-name" required placeholder="Your first name">
+                    </div>
+                    <div class="form-group">
+                        <label for="last-name">Last Name *</label>
+                        <input type="text" id="last-name" name="last-name" required placeholder="Your last name">
+                    </div>
+                </div>
+
+                <!-- Email -->
+                <div class="form-group">
+                    <label for="email">Email Address *</label>
+                    <input type="email" id="email" name="email" required placeholder="your.email@example.com">
+                </div>
+
+                <!-- Phone Number -->
+                <div class="form-group">
+                    <label for="phone">Phone Number *</label>
+                    <input type="tel" id="phone" name="phone" required placeholder="+1 (555) 123-4567">
+                </div>
+
+                <!-- Shipping Address -->
+                <div class="form-group">
+                    <label for="shipping-address">Shipping Address *</label>
+                    <textarea id="shipping-address" name="shipping-address" rows="4" required placeholder="123 Main St, City, State, ZIP"></textarea>
+                </div>
+
+                <!-- Terms and Conditions -->
+                <div class="form-checkbox">
+                    <input type="checkbox" id="terms" name="terms" required>
+                    <label for="terms">I agree to the <a href="#">Terms and Conditions</a> and <a href="#">Privacy Policy</a></label>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn btn-primary btn-full">Create Account</button>
+
+                <!-- Login Link -->
+                <div class="auth-footer">
+                    Already have an account? <a href="login.html">Login here</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

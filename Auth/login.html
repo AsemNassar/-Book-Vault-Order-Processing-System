@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - BookCorner</title>
+    <link rel="stylesheet" href="auth-styles.css">
+    <script src="auth.js" defer></script>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <nav>
+            <a href="home.html" class="logo">
+                <img src="images/book-icon.png" alt="Book Icon">
+                BookCorner
+            </a>
+            
+            <div class="nav-right">
+                <a href="signup.html" class="btn btn-signup">Sign Up</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Login Form -->
+    <div class="auth-container">
+        <div class="auth-box auth-box-small">
+            <div class="auth-header">
+                <div class="auth-header-title">
+                <img src="images/book-icon.png" alt="BookCorner Logo">
+                <h1>Welcome Back</h1>
+                </div>
+                <p>Login to continue your reading journey</p>
+            </div>
+
+            <form class="auth-form" action="login_process.php" method="post">
+                <!-- Username -->
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" required placeholder="Enter your username">
+                </div>
+
+                <!-- Password -->
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required placeholder="Enter your password">
+                </div>
+
+                <!-- Remember Me & Forgot Password -->
+                <div class="form-options">
+                    <div class="form-checkbox">
+                        <input type="checkbox" id="remember" name="remember">
+                        <label for="remember">Remember me</label>
+                    </div>
+                    <a href="#" class="forgot-password">Forgot password?</a>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn btn-primary btn-full">Login</button>
+
+                <!-- Sign Up Link -->
+                <div class="auth-footer">
+                    Don't have an account? <a href="signup.html">Sign up here</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
