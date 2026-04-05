@@ -171,13 +171,13 @@ bookvault/
 
 ## 👥 Team
 
-| Name | ID |
-|---|---|
-| Asem Wael Nassar | 2204043 |
-| Mahmoud Ibrahim Khalil | 2204086 |
-| Mohammed Hisham Hamdoun | 2204085 |
+| Name |
+|---|
+| Asem Wael Nassar |
+| Mahmoud Ibrahim Khalil | 
+| Mohammed Hisham Hamdoun |
 
-Alexandria National University — Computer & Communications Engineering
+
 
 ---
 
